@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🏷️</text></svg>" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+    <meta name="theme-color" content="#f97316" />
+    <meta name="description" content="DescuentosYa — Los mejores cupones y descuentos locales en Uruguay 🇺🇾" />
+    
+    <!-- PWA Meta Tags -->
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+    <meta name="apple-mobile-web-app-title" content="DescuentosYa" />
+    <meta name="mobile-web-app-capable" content="yes" />
+    <meta name="application-name" content="DescuentosYa" />
+    <meta name="msapplication-TileColor" content="#f97316" />
+    <meta name="msapplication-tap-highlight" content="no" />
+    <meta name="format-detection" content="telephone=no" />
+    
+    <!-- Open Graph -->
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content="DescuentosYa — Cupones Uruguay" />
+    <meta property="og:description" content="Los mejores cupones y descuentos locales en Uruguay 🇺🇾" />
+    <meta property="og:site_name" content="DescuentosYa" />
+    
+    <link rel="manifest" href="/manifest.json" />
+    
+    <title>DescuentosYa — Cupones y Descuentos en Uruguay 🇺🇾</title>
+    
+    <style>
+      * { -webkit-tap-highlight-color: transparent; }
+      body { overscroll-behavior: none; }
+      
+      /* Splash screen while app loads */
+      #splash-screen {
+        position: fixed;
+        inset: 0;
+        background: linear-gradient(135deg, #f97316, #f59e0b);
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        z-index: 99999;
+        transition: opacity 0.5s ease, visibility 0.5s ease;
+      }
+      #splash-screen.hidden {
+        opacity: 0;
+        visibility: hidden;
+      }
+      #splash-screen .splash-icon {
+        font-size: 64px;
+        animation: splash-bounce 1s ease-in-out infinite;
+      }
+      #splash-screen .splash-title {
+        color: white;
+        font-family: system-ui, -apple-system, sans-serif;
+        font-size: 28px;
+        font-weight: 800;
+        margin-top: 16px;
+        letter-spacing: -0.5px;
+      }
+      #splash-screen .splash-subtitle {
+        color: rgba(255,255,255,0.8);
+        font-family: system-ui, -apple-system, sans-serif;
+        font-size: 13px;
+        margin-top: 6px;
+        letter-spacing: 2px;
+        text-transform: uppercase;
+      }
+      #splash-screen .splash-dots {
+        display: flex;
+        gap: 6px;
+        margin-top: 32px;
+      }
+      #splash-screen .splash-dots span {
+        width: 8px;
+        height: 8px;
+        border-radius: 50%;
+        background: rgba(255,255,255,0.5);
+        animation: splash-dot 1.2s ease-in-out infinite;
+      }
+      #splash-screen .splash-dots span:nth-child(2) { animation-delay: 0.2s; }
+      #splash-screen .splash-dots span:nth-child(3) { animation-delay: 0.4s; }
+      
+      @keyframes splash-bounce {
+        0%, 100% { transform: translateY(0); }
+        50% { transform: translateY(-10px); }
+      }
+      @keyframes splash-dot {
+        0%, 100% { opacity: 0.4; transform: scale(1); }
+        50% { opacity: 1; transform: scale(1.3); }
+      }
+    </style>
+  </head>
+  <body>
+    <!-- Splash screen -->
+    <div id="splash-screen">
+      <div class="splash-icon">🏷️</div>
+      <div class="splash-title">DescuentosYa</div>
+      <div class="splash-subtitle">Cupones Uruguay 🇺🇾</div>
+      <div class="splash-dots">
+        <span></span><span></span><span></span>
+      </div>
+    </div>
+    
+    <div id="root"></div>
+    <script type="module" src="/src/main.tsx"></script>
+    
+    <!-- Generate PWA icons dynamically -->
+    <script>
+      // Generate icons for PWA manifest
+      function generateIcon(size) {
+        const canvas = document.createElement('canvas');
+        canvas.width = size;
+        canvas.height = size;
+        const ctx = canvas.getContext('2d');
+        
+        // Background gradient
+        const grad = ctx.createLinearGradient(0, 0, size, size);
+        grad.addColorStop(0, '#f97316');
+        grad.addColorStop(1, '#f59e0b');
+        ctx.fillStyle = grad;
+        
+        // Rounded rect
+        const r = size * 0.2;
+        ctx.beginPath();
+        ctx.moveTo(r, 0);
+        ctx.lineTo(size - r, 0);
+        ctx.quadraticCurveTo(size, 0, size, r);
+        ctx.lineTo(size, size - r);
+        ctx.quadraticCurveTo(size, size, size - r, size);
+        ctx.lineTo(r, size);
+        ctx.quadraticCurveTo(0, size, 0, size - r);
+        ctx.lineTo(0, r);
+        ctx.quadraticCurveTo(0, 0, r, 0);
+        ctx.fill();
+        
+        // Emoji
+        ctx.font = `${size * 0.5}px serif`;
+        ctx.textAlign = 'center';
+        ctx.textBaseline = 'middle';
+        ctx.fillText('🏷️', size / 2, size / 2 - size * 0.02);
+        
+        return canvas.toDataURL('image/png');
+      }
+      
+      // Create apple touch icon
+      const appleIcon = document.createElement('link');
+      appleIcon.rel = 'apple-touch-icon';
+      appleIcon.href = generateIcon(180);
+      document.head.appendChild(appleIcon);
+      
+      // Create PWA icon files by injecting into manifest
+      // (for browsers that support data URIs in manifests)
+      
+      // Hide splash after app loads
+      window.addEventListener('load', () => {
+        setTimeout(() => {
+          const splash = document.getElementById('splash-screen');
+          if (splash) splash.classList.add('hidden');
+          setTimeout(() => { if (splash) splash.remove(); }, 600);
+        }, 800);
+      });
+    </script>
+    
+    <!-- Service Worker Registration -->
+    <script>
+      if ('serviceWorker' in navigator) {
+        window.addEventListener('load', () => {
+          navigator.serviceWorker.register('/sw.js')
+            .then(reg => console.log('SW registered:', reg.scope))
+            .catch(err => console.log('SW registration failed:', err));
+        });
+      }
+    </script>
+  </body>
+</html>
