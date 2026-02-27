@@ -1,5 +1,5 @@
 import { useNavigate, useLocation } from 'react-router-dom';
-import { Home, Search, Ticket, User, Store, Bell, LogOut, Menu, X, Heart, Shield, CheckCircle, AlertTriangle, Info, XCircle, MapPin as MapIcon, Rocket } from 'lucide-react';
+import { Home, Search, Ticket, User, Bell, LogOut, Menu, X, Heart, Shield, CheckCircle, AlertTriangle, Info, XCircle, MapPin as MapIcon } from 'lucide-react';
 import { useApp } from '../context/AppContext';
 import { useState } from 'react';
 import { Toast } from '../types';
@@ -12,39 +12,26 @@ const toastStyles: Record<Toast['type'], { bg: string; icon: typeof CheckCircle;
 };
 
 const toastTextStyles: Record<Toast['type'], string> = {
-  success: 'text-green-800',
-  error: 'text-red-800',
-  warning: 'text-amber-800',
-  info: 'text-blue-800',
+  success: 'text-green-800', error: 'text-red-800', warning: 'text-amber-800', info: 'text-blue-800',
 };
 
 const toastIconStyles: Record<Toast['type'], string> = {
-  success: 'text-green-500',
-  error: 'text-red-500',
-  warning: 'text-amber-500',
-  info: 'text-blue-500',
+  success: 'text-green-500', error: 'text-red-500', warning: 'text-amber-500', info: 'text-blue-500',
 };
 
 export function ToastContainer() {
   const { toasts, removeToast } = useApp();
-
   if (toasts.length === 0) return null;
-
   return (
     <div className="fixed top-16 left-1/2 -translate-x-1/2 z-[100] w-full max-w-md px-4 space-y-2">
       {toasts.map((toast) => {
         const style = toastStyles[toast.type];
         const Icon = style.icon;
         return (
-          <div
-            key={toast.id}
-            className={`${style.bg} border ${style.border} rounded-2xl px-4 py-3 shadow-lg animate-toastIn flex items-center gap-3`}
-          >
+          <div key={toast.id} className={`${style.bg} border ${style.border} rounded-2xl px-4 py-3 shadow-lg animate-toastIn flex items-center gap-3`}>
             <Icon size={18} className={toastIconStyles[toast.type]} />
             <span className={`text-sm font-medium flex-1 ${toastTextStyles[toast.type]}`}>{toast.message}</span>
-            <button onClick={() => removeToast(toast.id)} className="text-gray-400 hover:text-gray-600 p-1">
-              <X size={14} />
-            </button>
+            <button onClick={() => removeToast(toast.id)} className="text-gray-400 hover:text-gray-600 p-1"><X size={14} /></button>
           </div>
         );
       })}
@@ -56,47 +43,32 @@ export function Header() {
   const { currentUser, logout, unreadNotifications, loginAs, platformStats } = useApp();
   const navigate = useNavigate();
   const [menuOpen, setMenuOpen] = useState(false);
-
   const isAdmin = currentUser?.role === 'admin';
-  const isBusiness = currentUser?.role === 'business';
 
   return (
     <>
       <header className={`text-white sticky top-0 z-50 shadow-lg ${
-        isAdmin
-          ? 'bg-gradient-to-r from-violet-600 via-purple-600 to-violet-600'
-          : 'bg-gradient-to-r from-orange-500 via-amber-500 to-orange-500'
+        isAdmin ? 'bg-gradient-to-r from-violet-600 via-purple-600 to-violet-600' : 'bg-gradient-to-r from-orange-500 via-amber-500 to-orange-500'
       }`}>
         <div className="px-4 py-3 flex items-center justify-between">
-          <button onClick={() => navigate(isAdmin ? '/admin' : isBusiness ? '/business' : '/')} className="flex items-center gap-2.5 group">
+          <button onClick={() => navigate(isAdmin ? '/admin' : '/')} className="flex items-center gap-2.5 group">
             <div className="bg-white rounded-xl p-1.5 shadow-md group-hover:scale-105 transition-transform">
               <span className="text-xl block">{isAdmin ? '🛡️' : '🏷️'}</span>
             </div>
             <div>
               <span className="font-extrabold text-lg tracking-tight block leading-tight">DescuentosYa</span>
               <span className="text-[10px] text-white/70 font-medium tracking-wider uppercase">
-                {isAdmin ? 'panel admin' : isBusiness ? 'panel comercio' : 'cupones uruguay'}
+                {isAdmin ? 'panel admin' : 'cupones gratis 🇺🇾'}
               </span>
             </div>
           </button>
-
           <div className="flex items-center gap-1">
-            {currentUser && !isAdmin && (
-              <>
-                <button onClick={() => navigate('/favorites')} className="relative p-2.5 hover:bg-white/20 rounded-full transition">
-                  <Heart size={20} />
-                </button>
-                <button onClick={() => navigate('/notifications')} className="relative p-2.5 hover:bg-white/20 rounded-full transition">
-                  <Bell size={20} />
-                  {unreadNotifications > 0 && (
-                    <span className="absolute top-1 right-1 bg-red-500 text-white text-[10px] font-bold rounded-full min-w-[18px] h-[18px] flex items-center justify-center animate-countPulse shadow-md">
-                      {unreadNotifications}
-                    </span>
-                  )}
-                </button>
-              </>
+            {currentUser && (
+              <button onClick={() => navigate(isAdmin ? '/notifications' : '/favorites')} className="relative p-2.5 hover:bg-white/20 rounded-full transition">
+                {isAdmin ? <Bell size={20} /> : <Heart size={20} />}
+              </button>
             )}
-            {isAdmin && (
+            {currentUser && !isAdmin && (
               <button onClick={() => navigate('/notifications')} className="relative p-2.5 hover:bg-white/20 rounded-full transition">
                 <Bell size={20} />
                 {unreadNotifications > 0 && (
@@ -113,19 +85,12 @@ export function Header() {
         </div>
       </header>
 
-      {/* Menu Overlay */}
       {menuOpen && (
         <>
           <div className="fixed inset-0 bg-black/30 z-40 animate-fadeIn" onClick={() => setMenuOpen(false)} />
           <div className="fixed right-0 top-0 h-full w-72 bg-white text-gray-800 shadow-2xl z-50 animate-fadeIn overflow-y-auto">
-            <div className={`p-6 pt-8 ${
-              isAdmin
-                ? 'bg-gradient-to-br from-violet-600 to-purple-700'
-                : 'bg-gradient-to-br from-orange-500 to-amber-500'
-            }`}>
-              <button onClick={() => setMenuOpen(false)} className="absolute top-4 right-4 p-1 text-white/80 hover:text-white">
-                <X size={20} />
-              </button>
+            <div className={`p-6 pt-8 ${isAdmin ? 'bg-gradient-to-br from-violet-600 to-purple-700' : 'bg-gradient-to-br from-orange-500 to-amber-500'}`}>
+              <button onClick={() => setMenuOpen(false)} className="absolute top-4 right-4 p-1 text-white/80 hover:text-white"><X size={20} /></button>
               {currentUser ? (
                 <div className="text-white">
                   <div className="w-16 h-16 rounded-full bg-white/20 flex items-center justify-center text-2xl font-bold mb-3 border-2 border-white/40">
@@ -134,15 +99,15 @@ export function Header() {
                   <p className="font-bold text-lg">{currentUser.name}</p>
                   <p className="text-white/80 text-sm">{currentUser.email}</p>
                   <span className="inline-flex items-center gap-1 mt-2 text-xs bg-white/20 px-2.5 py-1 rounded-full">
-                    {currentUser.role === 'business' ? <Store size={12} /> : currentUser.role === 'admin' ? <Shield size={12} /> : <User size={12} />}
-                    {currentUser.role === 'business' ? 'Comercio' : currentUser.role === 'admin' ? 'Administrador' : 'Usuario'}
+                    {isAdmin ? <Shield size={12} /> : <User size={12} />}
+                    {isAdmin ? 'Administrador' : 'Usuario'}
                   </span>
                 </div>
               ) : (
                 <div className="text-white">
                   <span className="text-4xl block mb-2">🏷️</span>
                   <p className="font-bold text-lg">DescuentosYa</p>
-                  <p className="text-white/80 text-sm">Iniciá sesión para más beneficios</p>
+                  <p className="text-white/80 text-sm">Cupones gratis en Uruguay</p>
                 </div>
               )}
             </div>
@@ -151,31 +116,25 @@ export function Header() {
               {!currentUser ? (
                 <div className="space-y-1">
                   <MenuButton icon={<User size={18} />} label="Iniciar Sesión" onClick={() => { navigate('/login'); setMenuOpen(false); }} />
-                  <MenuButton icon={<Store size={18} />} label="Crear Cuenta" onClick={() => { navigate('/register'); setMenuOpen(false); }} />
+                  <MenuButton icon={<User size={18} />} label="Crear Cuenta" onClick={() => { navigate('/register'); setMenuOpen(false); }} />
                   <div className="border-t my-3" />
                   <p className="text-xs text-gray-400 px-3 pb-2 font-semibold">🔧 Acceso rápido (demo):</p>
                   <MenuButton icon={<span>👤</span>} label="Entrar como Usuario" accent onClick={() => { loginAs('user'); navigate('/'); setMenuOpen(false); }} />
-                  <MenuButton icon={<span>🏪</span>} label="Entrar como Comercio" accent onClick={() => { loginAs('business'); navigate('/business'); setMenuOpen(false); }} />
                   <MenuButton icon={<span>🛡️</span>} label="Entrar como Admin" accent onClick={() => { loginAs('admin'); navigate('/admin'); setMenuOpen(false); }} />
-                  <div className="border-t my-3" />
-                  <MenuButton icon={<Rocket size={18} />} label="Guía de Despliegue 🚀" onClick={() => { navigate('/deploy-guide'); setMenuOpen(false); }} />
                 </div>
               ) : isAdmin ? (
                 <div className="space-y-1">
                   <MenuButton icon={<Shield size={18} />} label="Panel Admin" onClick={() => { navigate('/admin'); setMenuOpen(false); }} />
                   <MenuButton icon={<Bell size={18} />} label="Notificaciones" onClick={() => { navigate('/notifications'); setMenuOpen(false); }} />
                   <MenuButton icon={<Home size={18} />} label="Ver como Usuario" onClick={() => { navigate('/'); setMenuOpen(false); }} />
-                  <MenuButton icon={<Rocket size={18} />} label="Guía de Despliegue 🚀" onClick={() => { navigate('/deploy-guide'); setMenuOpen(false); }} />
                   {platformStats.pendingDeals > 0 && (
                     <div className="bg-amber-50 rounded-xl p-3 mt-2">
                       <p className="text-xs text-amber-700 font-semibold">⚠️ {platformStats.pendingDeals} ofertas pendientes</p>
                     </div>
                   )}
                   <div className="border-t my-3" />
-                  <button
-                    onClick={() => { logout(); navigate('/'); setMenuOpen(false); }}
-                    className="w-full flex items-center gap-3 px-4 py-3 rounded-xl text-red-600 hover:bg-red-50 transition text-sm font-medium"
-                  >
+                  <button onClick={() => { logout(); navigate('/'); setMenuOpen(false); }}
+                    className="w-full flex items-center gap-3 px-4 py-3 rounded-xl text-red-600 hover:bg-red-50 transition text-sm font-medium">
                     <LogOut size={18} /> Cerrar Sesión
                   </button>
                 </div>
@@ -185,24 +144,11 @@ export function Header() {
                   <MenuButton icon={<Search size={18} />} label="Explorar Ofertas" onClick={() => { navigate('/explore'); setMenuOpen(false); }} />
                   <MenuButton icon={<MapIcon size={18} />} label="Mapa de Cupones" onClick={() => { navigate('/map'); setMenuOpen(false); }} />
                   <MenuButton icon={<Heart size={18} />} label="Mis Favoritos" onClick={() => { navigate('/favorites'); setMenuOpen(false); }} />
-                  {currentUser.role === 'user' && (
-                    <MenuButton icon={<Ticket size={18} />} label="Mis Cupones" onClick={() => { navigate('/my-coupons'); setMenuOpen(false); }} />
-                  )}
-                  {isBusiness && (
-                    <>
-                      <div className="border-t my-3" />
-                      <p className="text-xs text-gray-400 px-3 pb-1">Panel Comercio</p>
-                      <MenuButton icon={<Store size={18} />} label="Dashboard" onClick={() => { navigate('/business'); setMenuOpen(false); }} />
-                      <MenuButton icon={<Ticket size={18} />} label="Crear Promoción" onClick={() => { navigate('/business/create'); setMenuOpen(false); }} />
-                      <MenuButton icon={<Search size={18} />} label="Escanear QR" onClick={() => { navigate('/business/scan'); setMenuOpen(false); }} />
-                    </>
-                  )}
+                  <MenuButton icon={<Ticket size={18} />} label="Mis Cupones" onClick={() => { navigate('/my-coupons'); setMenuOpen(false); }} />
                   <div className="border-t my-3" />
                   <MenuButton icon={<User size={18} />} label="Mi Perfil" onClick={() => { navigate('/profile'); setMenuOpen(false); }} />
-                  <button
-                    onClick={() => { logout(); navigate('/'); setMenuOpen(false); }}
-                    className="w-full flex items-center gap-3 px-4 py-3 rounded-xl text-red-600 hover:bg-red-50 transition text-sm font-medium"
-                  >
+                  <button onClick={() => { logout(); navigate('/'); setMenuOpen(false); }}
+                    className="w-full flex items-center gap-3 px-4 py-3 rounded-xl text-red-600 hover:bg-red-50 transition text-sm font-medium">
                     <LogOut size={18} /> Cerrar Sesión
                   </button>
                 </div>
@@ -210,7 +156,7 @@ export function Header() {
             </div>
 
             <div className="absolute bottom-0 left-0 right-0 p-4 border-t bg-gray-50">
-              <p className="text-[11px] text-gray-400 text-center">DescuentosYa v2.1 · Hecho con ❤️ en Uruguay 🇺🇾</p>
+              <p className="text-[11px] text-gray-400 text-center">DescuentosYa v3.0 · Hecho con ❤️ en Uruguay 🇺🇾</p>
             </div>
           </div>
         </>
@@ -221,11 +167,9 @@ export function Header() {
 
 function MenuButton({ icon, label, onClick, accent }: { icon: React.ReactNode; label: string; onClick: () => void; accent?: boolean }) {
   return (
-    <button
-      onClick={onClick}
+    <button onClick={onClick}
       className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl transition text-sm font-medium
-        ${accent ? 'bg-orange-50 text-orange-700 hover:bg-orange-100' : 'text-gray-700 hover:bg-gray-100'}`}
-    >
+        ${accent ? 'bg-orange-50 text-orange-700 hover:bg-orange-100' : 'text-gray-700 hover:bg-gray-100'}`}>
       <span className="text-gray-500">{icon}</span>
       {label}
     </button>
@@ -236,22 +180,13 @@ export function BottomNav() {
   const { currentUser, platformStats } = useApp();
   const navigate = useNavigate();
   const location = useLocation();
-
   const isAdmin = currentUser?.role === 'admin';
-  const isBusiness = currentUser?.role === 'business';
 
   const userTabs = [
     { path: '/', icon: Home, label: 'Inicio' },
     { path: '/explore', icon: Search, label: 'Explorar' },
     { path: '/map', icon: MapIcon, label: 'Mapa' },
     { path: '/my-coupons', icon: Ticket, label: 'Cupones' },
-    { path: '/profile', icon: User, label: 'Perfil' },
-  ];
-
-  const businessTabs = [
-    { path: '/business', icon: Store, label: 'Panel' },
-    { path: '/business/create', icon: Ticket, label: 'Crear' },
-    { path: '/business/scan', icon: Search, label: 'Escanear' },
     { path: '/profile', icon: User, label: 'Perfil' },
   ];
 
@@ -269,7 +204,7 @@ export function BottomNav() {
     { path: '/login', icon: User, label: 'Entrar' },
   ];
 
-  const tabs = !currentUser ? guestTabs : isAdmin ? adminTabs : isBusiness ? businessTabs : userTabs;
+  const tabs = !currentUser ? guestTabs : isAdmin ? adminTabs : userTabs;
 
   return (
     <nav className="fixed bottom-0 left-0 right-0 glass border-t border-gray-200/60 z-50 safe-area-bottom">
@@ -278,22 +213,18 @@ export function BottomNav() {
           const isActive = location.pathname === tab.path || (tab.path !== '/' && location.pathname.startsWith(tab.path));
           const accentColor = isAdmin ? 'text-violet-500' : 'text-orange-500';
           const dotColor = isAdmin ? 'bg-violet-500' : 'bg-orange-500';
-
           return (
             <button key={tab.path + tab.label} onClick={() => navigate(tab.path)}
               className={`flex-1 flex flex-col items-center py-2 pt-2.5 transition-all duration-200 relative
                 ${isActive ? accentColor : 'text-gray-400 hover:text-gray-600'}`}>
               <div className={`relative ${isActive ? 'scale-110' : ''} transition-transform duration-200`}>
                 <tab.icon size={20} strokeWidth={isActive ? 2.5 : 1.5} />
-                {isActive && (
-                  <div className={`absolute -bottom-0.5 left-1/2 -translate-x-1/2 w-1 h-1 ${dotColor} rounded-full`} />
-                )}
+                {isActive && <div className={`absolute -bottom-0.5 left-1/2 -translate-x-1/2 w-1 h-1 ${dotColor} rounded-full`} />}
               </div>
               <span className={`text-[10px] mt-1 ${isActive ? 'font-bold' : 'font-medium'}`}>{tab.label}</span>
-              {/* Badge for admin pending items */}
-              {tab.label === 'Admin' && (platformStats.pendingDeals + platformStats.pendingBusinesses) > 0 && (
+              {tab.label === 'Admin' && platformStats.pendingDeals > 0 && (
                 <span className="absolute top-1.5 right-1/2 translate-x-4 bg-red-500 text-white text-[9px] font-bold rounded-full min-w-[16px] h-[16px] flex items-center justify-center">
-                  {platformStats.pendingDeals + platformStats.pendingBusinesses}
+                  {platformStats.pendingDeals}
                 </span>
               )}
             </button>
@@ -305,11 +236,7 @@ export function BottomNav() {
 }
 
 export function PageContainer({ children, className = '' }: { children: React.ReactNode; className?: string }) {
-  return (
-    <div className={`max-w-lg mx-auto px-4 pb-24 ${className}`}>
-      {children}
-    </div>
-  );
+  return <div className={`max-w-lg mx-auto px-4 pb-24 ${className}`}>{children}</div>;
 }
 
 export function Skeleton({ className = '' }: { className?: string }) {
