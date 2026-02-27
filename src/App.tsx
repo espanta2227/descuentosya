@@ -7,7 +7,6 @@ import DealDetailPage from './pages/DealDetailPage';
 import MyCouponsPage from './pages/MyCouponsPage';
 import FavoritesPage from './pages/FavoritesPage';
 import { LoginPage, RegisterPage } from './pages/AuthPages';
-import { BusinessDashboard, CreatePromotionPage, ScanQRPage } from './pages/BusinessPages';
 import ProfilePage from './pages/ProfilePage';
 import NotificationsPage from './pages/NotificationsPage';
 import MapPage from './pages/MapPage';
@@ -32,10 +31,6 @@ export default function App() {
               <Route path="/favorites" element={<FavoritesPage />} />
               <Route path="/login" element={<LoginPage />} />
               <Route path="/register" element={<RegisterPage />} />
-              <Route path="/business" element={<BusinessDashboard />} />
-              <Route path="/business/create" element={<CreatePromotionPage />} />
-              <Route path="/business/edit/:id" element={<CreatePromotionPage />} />
-              <Route path="/business/scan" element={<ScanQRPage />} />
               <Route path="/admin" element={<AdminDashboard />} />
               <Route path="/deploy-guide" element={<DeployGuidePage />} />
               <Route path="/profile" element={<ProfilePage />} />
