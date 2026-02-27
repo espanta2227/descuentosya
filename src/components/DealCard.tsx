@@ -48,8 +48,8 @@ function CountdownBadge({ expiresAt }: { expiresAt: string }) {
 export default function DealCard({ deal, compact = false, index = 0 }: { deal: Deal; compact?: boolean; index?: number }) {
   const navigate = useNavigate();
   const { toggleFavorite, isFavorite, currentUser } = useApp();
-  const remaining = deal.availableQuantity - deal.soldQuantity;
-  const soldPercent = Math.round((deal.soldQuantity / deal.availableQuantity) * 100);
+  const remaining = deal.availableQuantity - deal.claimedQuantity;
+  const claimedPercent = Math.round((deal.claimedQuantity / deal.availableQuantity) * 100);
   const fav = isFavorite(deal.id);
 
   const handleFav = (e: React.MouseEvent) => {
@@ -76,7 +76,7 @@ export default function DealCard({ deal, compact = false, index = 0 }: { deal: D
               <Heart size={12} fill={fav ? 'white' : 'none'} />
             </button>
           )}
-          {remaining <= 5 && (
+          {remaining <= 5 && remaining > 0 && (
             <div className="absolute bottom-2 left-2 bg-amber-500/90 text-white px-2 py-0.5 rounded-lg text-[10px] font-bold">
               ¡Últimos {remaining}!
             </div>
@@ -87,8 +87,8 @@ export default function DealCard({ deal, compact = false, index = 0 }: { deal: D
           <h3 className="font-semibold text-sm leading-tight line-clamp-2 mb-2">{deal.title}</h3>
           <div className="flex items-end justify-between">
             <div>
-              <span className="text-orange-600 font-bold text-base">{formatPrice(deal.discountPrice)}</span>
-              <span className="text-gray-300 line-through text-[11px] ml-1">{formatPrice(deal.originalPrice)}</span>
+              <span className="text-green-600 font-bold text-sm">{formatPrice(deal.discountPrice)}</span>
+              <span className="text-gray-300 line-through text-[11px] ml-1.5">{formatPrice(deal.originalPrice)}</span>
             </div>
             <CountdownBadge expiresAt={deal.expiresAt} />
           </div>
@@ -116,7 +116,7 @@ export default function DealCard({ deal, compact = false, index = 0 }: { deal: D
             <Heart size={18} fill={fav ? 'white' : 'none'} />
           </button>
         )}
-        {remaining <= 5 && (
+        {remaining <= 5 && remaining > 0 && (
           <div className="absolute top-3 right-14 bg-amber-500 text-white px-2.5 py-1 rounded-xl text-xs font-bold shadow flex items-center gap-1 animate-pulse">
             <TrendingUp size={12} /> ¡Últimos {remaining}!
           </div>
@@ -145,21 +145,26 @@ export default function DealCard({ deal, compact = false, index = 0 }: { deal: D
         </div>
 
         <div className="flex items-center justify-between mb-3">
-          <div>
-            <span className="text-2xl font-extrabold text-orange-600">{formatPrice(deal.discountPrice)}</span>
-            <span className="text-gray-300 line-through text-sm ml-2">{formatPrice(deal.originalPrice)}</span>
+          <div className="flex items-center gap-3">
+            <div>
+              <p className="text-green-600 font-extrabold text-xl">{formatPrice(deal.discountPrice)}</p>
+            </div>
+            <div>
+              <span className="text-gray-300 line-through text-sm">{formatPrice(deal.originalPrice)}</span>
+              <span className="text-red-500 font-bold text-xs ml-1.5">-{deal.discountPercent}%</span>
+            </div>
           </div>
           <CountdownBadge expiresAt={deal.expiresAt} />
         </div>
 
         <div>
           <div className="flex justify-between text-[11px] text-gray-400 mb-1">
-            <span>{deal.soldQuantity} vendidos</span>
+            <span>{deal.claimedQuantity} canjeados</span>
             <span>{remaining} disponibles</span>
           </div>
           <div className="w-full bg-gray-100 rounded-full h-1.5 overflow-hidden">
-            <div className="bg-gradient-to-r from-orange-400 to-red-500 h-1.5 rounded-full transition-all duration-700"
-              style={{ width: `${soldPercent}%` }} />
+            <div className="bg-gradient-to-r from-green-400 to-emerald-500 h-1.5 rounded-full transition-all duration-700"
+              style={{ width: `${claimedPercent}%` }} />
           </div>
         </div>
 
