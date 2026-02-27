@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { ArrowLeft, Mail, Lock, User, Store, Eye, EyeOff } from 'lucide-react';
+import { ArrowLeft, Mail, Lock, User, Eye, EyeOff } from 'lucide-react';
 import { useApp } from '../context/AppContext';
 
 export function LoginPage() {
@@ -80,9 +80,9 @@ export function LoginPage() {
                 className="flex items-center justify-center gap-2 bg-green-50 border border-green-200 text-green-700 px-4 py-2.5 rounded-xl text-sm font-medium hover:bg-green-100 transition">
                 <User size={16} /> Usuario
               </button>
-              <button onClick={() => { loginAs('business'); navigate('/business'); }}
-                className="flex items-center justify-center gap-2 bg-blue-50 border border-blue-200 text-blue-700 px-4 py-2.5 rounded-xl text-sm font-medium hover:bg-blue-100 transition">
-                <Store size={16} /> Comercio
+              <button onClick={() => { loginAs('admin'); navigate('/admin'); }}
+                className="flex items-center justify-center gap-2 bg-violet-50 border border-violet-200 text-violet-700 px-4 py-2.5 rounded-xl text-sm font-medium hover:bg-violet-100 transition">
+                🛡️ Admin
               </button>
             </div>
           </div>
@@ -100,7 +100,6 @@ export function LoginPage() {
 export function RegisterPage() {
   const navigate = useNavigate();
   const { register } = useApp();
-  const [role, setRole] = useState<'user' | 'business'>('user');
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -110,8 +109,8 @@ export function RegisterPage() {
     e.preventDefault();
     if (!name || !email || !password) { setError('Completá todos los campos'); return; }
     if (password.length < 6) { setError('La contraseña debe tener al menos 6 caracteres'); return; }
-    register(name, email, role);
-    navigate(role === 'business' ? '/business' : '/');
+    register(name, email);
+    navigate('/');
   };
 
   return (
@@ -123,33 +122,17 @@ export function RegisterPage() {
         <div className="text-center">
           <div className="text-5xl mb-3">🚀</div>
           <h1 className="text-3xl font-extrabold">Crear Cuenta</h1>
-          <p className="text-white/80 mt-1">Unite a DescuentosYa</p>
+          <p className="text-white/80 mt-1">Unite a DescuentosYa — ¡Es gratis!</p>
         </div>
       </div>
 
       <div className="px-6 -mt-8">
         <div className="bg-white rounded-3xl shadow-xl p-6">
-          {/* Role Toggle */}
-          <div className="flex bg-gray-100 rounded-xl p-1 mb-5">
-            <button onClick={() => setRole('user')}
-              className={`flex-1 py-2.5 rounded-lg text-sm font-medium transition flex items-center justify-center gap-1.5
-                ${role === 'user' ? 'bg-white shadow text-orange-600' : 'text-gray-500'}`}>
-              <User size={16} /> Soy Usuario
-            </button>
-            <button onClick={() => setRole('business')}
-              className={`flex-1 py-2.5 rounded-lg text-sm font-medium transition flex items-center justify-center gap-1.5
-                ${role === 'business' ? 'bg-white shadow text-orange-600' : 'text-gray-500'}`}>
-              <Store size={16} /> Soy Comercio
-            </button>
-          </div>
-
           <form onSubmit={handleSubmit} className="space-y-4">
             <div>
-              <label className="text-sm font-medium text-gray-700 mb-1 block">
-                {role === 'business' ? 'Nombre del Comercio' : 'Nombre Completo'}
-              </label>
+              <label className="text-sm font-medium text-gray-700 mb-1 block">Nombre Completo</label>
               <input type="text" value={name} onChange={e => setName(e.target.value)}
-                placeholder={role === 'business' ? 'Mi Negocio' : 'Juan Pérez'}
+                placeholder="Juan Pérez"
                 className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-orange-300 focus:outline-none text-sm" />
             </div>
             <div>
@@ -165,17 +148,15 @@ export function RegisterPage() {
                 className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-orange-300 focus:outline-none text-sm" />
             </div>
 
-            {role === 'business' && (
-              <div className="bg-blue-50 rounded-xl p-3 text-xs text-blue-700">
-                🏪 Al registrarte como comercio podrás crear promociones, validar cupones y acceder al panel de administración.
-              </div>
-            )}
+            <div className="bg-green-50 rounded-xl p-3 text-xs text-green-700">
+              🎁 Al registrarte obtenés acceso inmediato a todos los descuentos y cupones gratuitos de tu zona.
+            </div>
 
             {error && <p className="text-red-500 text-sm bg-red-50 px-3 py-2 rounded-xl">{error}</p>}
 
             <button type="submit"
               className="w-full bg-gradient-to-r from-orange-500 to-amber-500 text-white py-3.5 rounded-xl font-bold text-base shadow-lg">
-              Crear Cuenta
+              Crear Cuenta Gratis
             </button>
           </form>
 
