@@ -27,7 +27,7 @@ export default function HomePage() {
   const [localSearch, setLocalSearch] = useState('');
 
   const activeDeals = getVisibleDeals();
-  const hotDeals = [...activeDeals].sort((a, b) => b.soldQuantity - a.soldQuantity).slice(0, 4);
+  const hotDeals = [...activeDeals].sort((a, b) => b.claimedQuantity - a.claimedQuantity).slice(0, 4);
   const newDeals = [...activeDeals].sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()).slice(0, 4);
   const featuredDeals = activeDeals.filter(d => d.featured);
   const bigDiscounts = [...activeDeals].sort((a, b) => b.discountPercent - a.discountPercent).slice(0, 4);
@@ -103,12 +103,7 @@ export default function HomePage() {
             <button
               onClick={() => { loginAs('user'); navigate('/'); }}
               className="flex-1 bg-white border border-green-300 text-green-700 px-3 py-2.5 rounded-xl text-sm font-medium hover:bg-green-50 transition active:scale-95 shadow-sm">
-              👤 Usuario
-            </button>
-            <button
-              onClick={() => { loginAs('business'); navigate('/business'); }}
-              className="flex-1 bg-white border border-green-300 text-green-700 px-3 py-2.5 rounded-xl text-sm font-medium hover:bg-green-50 transition active:scale-95 shadow-sm">
-              🏪 Comercio
+              👤 Probar como Usuario
             </button>
             <button
               onClick={() => { loginAs('admin'); navigate('/admin'); }}
@@ -226,12 +221,12 @@ export default function HomePage() {
       {/* CTA */}
       {!currentUser && (
         <section className="bg-gradient-to-r from-orange-500 to-amber-500 rounded-2xl p-5 text-white text-center mb-6 animate-fadeInUp">
-          <p className="text-2xl mb-2">🚀</p>
-          <h3 className="font-extrabold text-lg mb-1">¿Tenés un comercio?</h3>
-          <p className="text-white/80 text-sm mb-4">Publicá tus promociones y llegá a miles de clientes</p>
+          <p className="text-2xl mb-2">🎟️</p>
+          <h3 className="font-extrabold text-lg mb-1">¡Descuentos increíbles cerca tuyo!</h3>
+          <p className="text-white/80 text-sm mb-4">Registrate, obtené tu cupón con QR y pagá menos en los mejores comercios de Uruguay</p>
           <button onClick={() => navigate('/register')}
             className="bg-white text-orange-600 px-6 py-2.5 rounded-xl font-bold text-sm hover:bg-white/90 transition shadow-lg">
-            Empezar Gratis
+            Crear Cuenta Gratis
           </button>
         </section>
       )}
