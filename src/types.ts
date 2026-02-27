@@ -1,6 +1,5 @@
-export type UserRole = 'user' | 'business' | 'admin';
+export type UserRole = 'user' | 'admin';
 export type DealApproval = 'pending' | 'approved' | 'rejected';
-export type BusinessApproval = 'pending' | 'approved' | 'rejected';
 
 export interface User {
   id: string;
@@ -14,7 +13,6 @@ export interface User {
 
 export interface Business {
   id: string;
-  userId: string;
   name: string;
   description: string;
   logo: string;
@@ -25,10 +23,10 @@ export interface Business {
   phone: string;
   rating: number;
   reviewCount: number;
-  subscriptionType: 'free' | 'premium';
-  verified: boolean;
-  approvalStatus: BusinessApproval;
-  rejectionReason?: string;
+  contactName: string;
+  contactEmail: string;
+  plan: 'basico' | 'premium' | 'elite';
+  active: boolean;
 }
 
 export interface Deal {
@@ -45,13 +43,12 @@ export interface Deal {
   discountPercent: number;
   category: string;
   availableQuantity: number;
-  soldQuantity: number;
+  claimedQuantity: number;
   expiresAt: string;
   createdAt: string;
   active: boolean;
   paused: boolean;
   approvalStatus: DealApproval;
-  rejectionReason?: string;
   address: string;
   lat: number;
   lng: number;
@@ -69,7 +66,7 @@ export interface Coupon {
   userId: string;
   qrCode: string;
   status: CouponStatus;
-  purchasedAt: string;
+  claimedAt: string;
   usedAt?: string;
   deal: Deal;
 }
@@ -93,7 +90,7 @@ export interface Notification {
   read: boolean;
   createdAt: string;
   dealId?: string;
-  type?: 'purchase' | 'expiry' | 'promo' | 'system' | 'approval' | 'rejection';
+  type?: 'claim' | 'expiry' | 'promo' | 'system' | 'approval';
 }
 
 export interface Toast {
