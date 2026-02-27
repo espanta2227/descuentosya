@@ -1,5 +1,5 @@
 import { useNavigate } from 'react-router-dom';
-import { Mail, Phone, Calendar, Shield, Star, LogOut, ChevronRight, Ticket, Bell, HelpCircle, Settings, Heart, Award, TrendingUp } from 'lucide-react';
+import { Mail, Phone, Calendar, Shield, LogOut, ChevronRight, Ticket, Bell, HelpCircle, Settings, Heart, Award, TrendingUp } from 'lucide-react';
 import { useApp } from '../context/AppContext';
 import { PageContainer, EmptyState } from '../components/Layout';
 import { formatPrice } from '../components/DealCard';
@@ -19,8 +19,8 @@ export default function ProfilePage() {
   }
 
   const myCoupons = coupons.filter(c => c.userId === currentUser.id);
-  const totalSpent = myCoupons.reduce((acc, c) => acc + c.deal.discountPrice, 0);
   const activeCoupons = myCoupons.filter(c => c.status === 'active').length;
+  const isAdmin = currentUser.role === 'admin';
 
   // Level calculation
   const level = myCoupons.length >= 10 ? 'Gold' : myCoupons.length >= 5 ? 'Silver' : 'Bronze';
@@ -33,7 +33,9 @@ export default function ProfilePage() {
       {/* Avatar & Info */}
       <div className="text-center mb-6 animate-fadeIn">
         <div className="relative inline-block">
-          <div className="w-24 h-24 rounded-full bg-gradient-to-br from-orange-400 to-amber-500 flex items-center justify-center text-white text-4xl font-bold mx-auto shadow-lg border-4 border-white">
+          <div className={`w-24 h-24 rounded-full flex items-center justify-center text-white text-4xl font-bold mx-auto shadow-lg border-4 border-white ${
+            isAdmin ? 'bg-gradient-to-br from-violet-500 to-purple-600' : 'bg-gradient-to-br from-orange-400 to-amber-500'
+          }`}>
             {currentUser.name.charAt(0).toUpperCase()}
           </div>
           <div className="absolute -bottom-1 -right-1 bg-white rounded-full p-1 shadow-md">
@@ -45,10 +47,12 @@ export default function ProfilePage() {
         <h1 className="text-xl font-extrabold mt-3">{currentUser.name}</h1>
         <p className="text-gray-500 text-sm">{currentUser.email}</p>
         <div className="flex items-center justify-center gap-2 mt-2">
-          <span className="text-xs bg-orange-100 text-orange-700 px-3 py-1 rounded-full font-medium">
-            {currentUser.role === 'business' ? '🏪 Comercio' : currentUser.role === 'admin' ? '👑 Admin' : '👤 Usuario'}
+          <span className={`text-xs px-3 py-1 rounded-full font-medium ${
+            isAdmin ? 'bg-violet-100 text-violet-700' : 'bg-orange-100 text-orange-700'
+          }`}>
+            {isAdmin ? '🛡️ Administrador' : '👤 Usuario'}
           </span>
-          {currentUser.role === 'user' && (
+          {!isAdmin && (
             <span className="text-xs bg-amber-100 text-amber-700 px-3 py-1 rounded-full font-medium">
               {levelEmoji} {level}
             </span>
@@ -57,31 +61,31 @@ export default function ProfilePage() {
       </div>
 
       {/* Level Progress */}
-      {currentUser.role === 'user' && level !== 'Gold' && (
+      {!isAdmin && level !== 'Gold' && (
         <div className="bg-gradient-to-r from-amber-50 to-yellow-50 rounded-2xl p-4 mb-5 border border-amber-100 animate-fadeInUp">
           <div className="flex items-center justify-between mb-2">
             <div className="flex items-center gap-2">
               <Award size={16} className="text-amber-600" />
               <span className="text-sm font-semibold text-amber-800">Nivel {level}</span>
             </div>
-            <span className="text-xs text-amber-600">{myCoupons.length}/{nextLevel} compras</span>
+            <span className="text-xs text-amber-600">{myCoupons.length}/{nextLevel} canjes</span>
           </div>
           <div className="w-full bg-amber-200/50 rounded-full h-2">
             <div className="bg-gradient-to-r from-amber-400 to-yellow-400 h-2 rounded-full transition-all duration-1000"
               style={{ width: `${progress}%` }} />
           </div>
           <p className="text-xs text-amber-600 mt-1.5">
-            {nextLevel - myCoupons.length} compras más para subir a {level === 'Bronze' ? 'Silver 🥈' : 'Gold 🥇'}
+            {nextLevel - myCoupons.length} canjes más para subir a {level === 'Bronze' ? 'Silver 🥈' : 'Gold 🥇'}
           </p>
         </div>
       )}
 
       {/* Stats */}
-      {currentUser.role === 'user' && (
-        <div className="grid grid-cols-4 gap-2 mb-5 stagger-children">
+      {!isAdmin && (
+        <div className="grid grid-cols-3 gap-2 mb-5">
           <div className="bg-orange-50 rounded-xl p-3 text-center border border-orange-100 animate-fadeInUp">
             <p className="text-lg font-extrabold text-orange-600">{myCoupons.length}</p>
-            <p className="text-[10px] text-gray-500 mt-0.5">Cupones</p>
+            <p className="text-[10px] text-gray-500 mt-0.5">Canjeados</p>
           </div>
           <div className="bg-green-50 rounded-xl p-3 text-center border border-green-100 animate-fadeInUp">
             <p className="text-lg font-extrabold text-green-600">{activeCoupons}</p>
@@ -91,17 +95,11 @@ export default function ProfilePage() {
             <p className="text-lg font-extrabold text-blue-600">{favorites.length}</p>
             <p className="text-[10px] text-gray-500 mt-0.5">Favoritos</p>
           </div>
-          <div className="bg-purple-50 rounded-xl p-3 text-center border border-purple-100 animate-fadeInUp">
-            <Ticket size={18} className="mx-auto text-purple-500" />
-            <p className="text-[10px] text-gray-500 mt-0.5">
-              {formatPrice(totalSpent).replace('ARS', '').trim()}
-            </p>
-          </div>
         </div>
       )}
 
       {/* Savings Card */}
-      {currentUser.role === 'user' && totalSaved > 0 && (
+      {!isAdmin && totalSaved > 0 && (
         <div className="bg-gradient-to-br from-green-500 to-emerald-500 rounded-2xl p-5 mb-5 text-white relative overflow-hidden animate-fadeInUp">
           <div className="absolute -right-6 -top-6 w-24 h-24 bg-white/10 rounded-full" />
           <div className="flex items-center gap-2 mb-1">
@@ -122,28 +120,16 @@ export default function ProfilePage() {
         <InfoRow icon={<Shield size={17} className="text-green-500" />} label="Estado" value="Cuenta verificada ✓" last />
       </div>
 
-      {/* Subscription (Business) */}
-      {currentUser.role === 'business' && (
-        <div className="bg-gradient-to-r from-amber-50 to-yellow-50 border border-amber-200 rounded-2xl p-4 mb-4 animate-fadeInUp">
-          <div className="flex items-center gap-2 mb-2">
-            <Star size={18} className="text-amber-500 fill-amber-500" />
-            <h3 className="font-bold text-amber-800">Plan Premium</h3>
-          </div>
-          <p className="text-sm text-amber-700 mb-3">Acceso completo, prioridad en resultados y soporte dedicado.</p>
-          <div className="flex items-center justify-between">
-            <span className="text-lg font-bold text-amber-800">$U 2.490/mes</span>
-            <span className="bg-green-100 text-green-700 px-3 py-1 rounded-full text-xs font-semibold">✓ Activo</span>
-          </div>
-        </div>
-      )}
-
       {/* Menu */}
       <div className="bg-white rounded-2xl border border-gray-100 shadow-sm mb-4 overflow-hidden">
-        {currentUser.role === 'user' && (
+        {!isAdmin && (
           <>
             <MenuRow icon={<Ticket size={17} className="text-orange-500" />} label="Mis Cupones" badge={myCoupons.length.toString()} onClick={() => navigate('/my-coupons')} />
             <MenuRow icon={<Heart size={17} className="text-red-500" />} label="Mis Favoritos" badge={favorites.length.toString()} onClick={() => navigate('/favorites')} />
           </>
+        )}
+        {isAdmin && (
+          <MenuRow icon={<Shield size={17} className="text-violet-500" />} label="Panel Admin" onClick={() => navigate('/admin')} />
         )}
         <MenuRow icon={<Bell size={17} className="text-blue-500" />} label="Notificaciones" onClick={() => navigate('/notifications')} />
         <MenuRow icon={<Settings size={17} className="text-gray-500" />} label="Configuración" onClick={() => {}} />
@@ -156,7 +142,7 @@ export default function ProfilePage() {
         <LogOut size={17} /> Cerrar Sesión
       </button>
 
-      <p className="text-center text-[11px] text-gray-400 mb-4">DescuentosYa v2.0 · Hecho con ❤️ en Uruguay 🇺🇾</p>
+      <p className="text-center text-[11px] text-gray-400 mb-4">DescuentosYa v3.0 · Hecho con ❤️ en Uruguay 🇺🇾</p>
     </PageContainer>
   );
 }
