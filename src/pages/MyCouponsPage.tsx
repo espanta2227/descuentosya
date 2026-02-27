@@ -89,14 +89,14 @@ export default function MyCouponsPage() {
                     <p className="text-xs text-gray-400 mt-0.5">{coupon.deal.businessName}</p>
                     <div className="flex items-center justify-between mt-2">
                       <span className="font-bold text-orange-600">{formatPrice(coupon.deal.discountPrice)}</span>
-                      <span className="text-[11px] text-gray-400">{formatDate(coupon.purchasedAt)}</span>
+                      <span className="text-[11px] text-gray-400">{formatDate(coupon.claimedAt)}</span>
                     </div>
                   </div>
                   <ChevronRight size={16} className="text-gray-300 self-center flex-shrink-0" />
                 </div>
                 {coupon.status === 'active' && (
                   <div className="border-t border-dashed border-green-200 px-4 py-2.5 bg-green-50/50 flex items-center justify-center gap-2 text-green-600 text-xs font-medium">
-                    <QrCode size={13} /> Tocar para ver QR y canjear
+                    <QrCode size={13} /> Tocar para ver QR y presentar en el local
                   </div>
                 )}
               </button>
@@ -145,17 +145,21 @@ export default function MyCouponsPage() {
               </p>
 
               <div className="bg-orange-50 rounded-xl p-3 mb-4 border border-orange-100">
+                <p className="text-xs text-gray-500 mb-1">Pagás en el local:</p>
                 <p className="text-orange-700 font-extrabold text-2xl">{formatPrice(selectedCoupon.deal.discountPrice)}</p>
-                <p className="text-xs text-orange-500 font-medium">Valor del cupón</p>
+                <p className="text-xs text-orange-500 font-medium">
+                  <span className="line-through text-gray-400">{formatPrice(selectedCoupon.deal.originalPrice)}</span>
+                  <span className="ml-1.5 text-red-500 font-bold">-{selectedCoupon.deal.discountPercent}% OFF</span>
+                </p>
               </div>
 
               <p className="text-xs text-gray-400 mb-4">
-                Comprado: {formatDate(selectedCoupon.purchasedAt)}
+                Canjeado: {formatDate(selectedCoupon.claimedAt)}
               </p>
 
               {selectedCoupon.status === 'active' && (
                 <div className="bg-blue-50 rounded-xl p-3 mb-4 border border-blue-100">
-                  <p className="text-xs text-blue-700 font-medium">📱 Mostrá este QR en el comercio para canjear tu cupón</p>
+                  <p className="text-xs text-blue-700 font-medium">📱 Mostrá este QR en el comercio y pagás <strong>{formatPrice(selectedCoupon.deal.discountPrice)}</strong> (en vez de {formatPrice(selectedCoupon.deal.originalPrice)})</p>
                 </div>
               )}
 
