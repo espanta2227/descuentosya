@@ -218,6 +218,26 @@ input:focus, textarea:focus, select:focus, button:focus-visible {
   }
 }
 
+@keyframes userPulse {
+  0% {
+    transform: translate(-50%, -50%) scale(1);
+    opacity: 0.6;
+  }
+  50% {
+    transform: translate(-50%, -50%) scale(2.5);
+    opacity: 0;
+  }
+  100% {
+    transform: translate(-50%, -50%) scale(1);
+    opacity: 0;
+  }
+}
+
+.custom-deal-marker, .custom-user-marker {
+  background: none !important;
+  border: none !important;
+}
+
 /* Leaflet popup overrides */
 .leaflet-popup-content-wrapper {
   border-radius: 16px !important;
