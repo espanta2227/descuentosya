@@ -545,7 +545,7 @@ export default function MapPage() {
                       {daysLeft(selectedDeal.expiresAt)}d restantes
                     </span>
                     <span>•</span>
-                    <span>{selectedDeal.availableQuantity - selectedDeal.soldQuantity} disponibles</span>
+                    <span>{selectedDeal.availableQuantity - selectedDeal.claimedQuantity} disponibles</span>
                     {selectedDeal.rating && (
                       <>
                         <span>•</span>
