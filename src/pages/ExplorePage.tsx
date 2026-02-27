@@ -26,7 +26,7 @@ export default function ExplorePage() {
       result = result.filter(d => d.category === selectedCategory);
     }
     switch (sortBy) {
-      case 'popular': result.sort((a, b) => b.soldQuantity - a.soldQuantity); break;
+      case 'popular': result.sort((a, b) => b.claimedQuantity - a.claimedQuantity); break;
       case 'discount': result.sort((a, b) => b.discountPercent - a.discountPercent); break;
       case 'price': result.sort((a, b) => a.discountPrice - b.discountPrice); break;
       case 'newest': result.sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()); break;
