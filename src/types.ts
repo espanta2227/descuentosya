@@ -1,4 +1,4 @@
-export type UserRole = 'user' | 'admin';
+export type UserRole = 'user' | 'admin' | 'business';
 export type DealApproval = 'pending' | 'approved' | 'rejected';
 
 export interface User {
@@ -8,6 +8,7 @@ export interface User {
   role: UserRole;
   avatar?: string;
   phone?: string;
+  businessId?: string; // Links business user to their Business
   createdAt: string;
 }
 
