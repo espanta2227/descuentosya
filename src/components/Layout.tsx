@@ -1,8 +1,9 @@
 import { useNavigate, useLocation } from 'react-router-dom';
-import { Home, Search, Ticket, User, Bell, LogOut, Menu, X, Heart, Shield, CheckCircle, AlertTriangle, Info, XCircle, MapPin as MapIcon } from 'lucide-react';
+import { Home, Search, Ticket, User, Bell, LogOut, Menu, X, Heart, Shield, CheckCircle, AlertTriangle, Info, XCircle, MapPin as MapIcon, Scan, ListChecks, BarChart3 } from 'lucide-react';
 import { useApp } from '../context/AppContext';
 import { useState } from 'react';
 import { Toast } from '../types';
+import { LogoIcon, LogoMenu } from './Logo';
 
 const toastStyles: Record<Toast['type'], { bg: string; icon: typeof CheckCircle; border: string }> = {
   success: { bg: 'bg-green-50', icon: CheckCircle, border: 'border-green-300' },
@@ -44,21 +45,34 @@ export function Header() {
   const navigate = useNavigate();
   const [menuOpen, setMenuOpen] = useState(false);
   const isAdmin = currentUser?.role === 'admin';
+  const isBusiness = currentUser?.role === 'business';
+
+  const headerGradient = isAdmin
+    ? 'bg-gradient-to-r from-violet-600 via-purple-600 to-violet-600'
+    : isBusiness
+    ? 'bg-gradient-to-r from-emerald-600 via-teal-600 to-emerald-600'
+    : 'bg-gradient-to-r from-orange-500 via-amber-500 to-orange-500';
+
+  const headerSub = isAdmin ? 'Panel Administrador' : isBusiness ? 'Panel Comercio' : 'Cupones Uruguay 🇺🇾';
+  const headerHome = isAdmin ? '/admin' : isBusiness ? '/business' : '/';
 
   return (
     <>
-      <header className={`text-white sticky top-0 z-50 shadow-lg ${
-        isAdmin ? 'bg-gradient-to-r from-violet-600 via-purple-600 to-violet-600' : 'bg-gradient-to-r from-orange-500 via-amber-500 to-orange-500'
-      }`}>
+      <header className={`text-white sticky top-0 z-50 shadow-lg ${headerGradient}`}>
         <div className="px-4 py-3 flex items-center justify-between">
-          <button onClick={() => navigate(isAdmin ? '/admin' : '/')} className="flex items-center gap-2.5 group">
-            <div className="bg-white rounded-xl p-1.5 shadow-md group-hover:scale-105 transition-transform">
-              <span className="text-xl block">{isAdmin ? '🛡️' : '🏷️'}</span>
+          <button onClick={() => navigate(headerHome)} className="flex items-center gap-2.5 group hover:opacity-90 transition-opacity">
+            <div className="group-hover:scale-105 transition-transform">
+              <LogoIcon size={38} />
             </div>
-            <div>
-              <span className="font-extrabold text-lg tracking-tight block leading-tight">DescuentosYa</span>
-              <span className="text-[10px] text-white/70 font-medium tracking-wider uppercase">
-                {isAdmin ? 'panel admin' : 'cupones gratis 🇺🇾'}
+            <div className="flex flex-col items-start">
+              <span 
+                className="font-brand text-[19px] text-white tracking-wide leading-tight"
+                style={{ fontFamily: "'Fredoka One', 'Poppins', system-ui, sans-serif" }}
+              >
+                Descuentos<span className="text-yellow-300">Ya</span>
+              </span>
+              <span className="text-[9px] text-white/70 font-medium tracking-[1.5px] uppercase">
+                {headerSub}
               </span>
             </div>
           </button>
@@ -99,15 +113,13 @@ export function Header() {
                   <p className="font-bold text-lg">{currentUser.name}</p>
                   <p className="text-white/80 text-sm">{currentUser.email}</p>
                   <span className="inline-flex items-center gap-1 mt-2 text-xs bg-white/20 px-2.5 py-1 rounded-full">
-                    {isAdmin ? <Shield size={12} /> : <User size={12} />}
-                    {isAdmin ? 'Administrador' : 'Usuario'}
+                    {isAdmin ? <Shield size={12} /> : isBusiness ? <BarChart3 size={12} /> : <User size={12} />}
+                    {isAdmin ? 'Administrador' : isBusiness ? 'Comercio' : 'Usuario'}
                   </span>
                 </div>
               ) : (
                 <div className="text-white">
-                  <span className="text-4xl block mb-2">🏷️</span>
-                  <p className="font-bold text-lg">DescuentosYa</p>
-                  <p className="text-white/80 text-sm">Cupones gratis en Uruguay</p>
+                  <LogoMenu />
                 </div>
               )}
             </div>
@@ -120,6 +132,7 @@ export function Header() {
                   <div className="border-t my-3" />
                   <p className="text-xs text-gray-400 px-3 pb-2 font-semibold">🔧 Acceso rápido (demo):</p>
                   <MenuButton icon={<span>👤</span>} label="Entrar como Usuario" accent onClick={() => { loginAs('user'); navigate('/'); setMenuOpen(false); }} />
+                  <MenuButton icon={<span>🏪</span>} label="Entrar como Comercio" accent onClick={() => { loginAs('business'); navigate('/business'); setMenuOpen(false); }} />
                   <MenuButton icon={<span>🛡️</span>} label="Entrar como Admin" accent onClick={() => { loginAs('admin'); navigate('/admin'); setMenuOpen(false); }} />
                 </div>
               ) : isAdmin ? (
@@ -132,6 +145,18 @@ export function Header() {
                       <p className="text-xs text-amber-700 font-semibold">⚠️ {platformStats.pendingDeals} ofertas pendientes</p>
                     </div>
                   )}
+                  <div className="border-t my-3" />
+                  <button onClick={() => { logout(); navigate('/'); setMenuOpen(false); }}
+                    className="w-full flex items-center gap-3 px-4 py-3 rounded-xl text-red-600 hover:bg-red-50 transition text-sm font-medium">
+                    <LogOut size={18} /> Cerrar Sesión
+                  </button>
+                </div>
+              ) : isBusiness ? (
+                <div className="space-y-1">
+                  <MenuButton icon={<BarChart3 size={18} />} label="Mi Panel" onClick={() => { navigate('/business'); setMenuOpen(false); }} />
+                  <MenuButton icon={<Scan size={18} />} label="Escanear QR" onClick={() => { navigate('/business'); setMenuOpen(false); }} />
+                  <MenuButton icon={<ListChecks size={18} />} label="Mis Cupones" onClick={() => { navigate('/business'); setMenuOpen(false); }} />
+                  <MenuButton icon={<Home size={18} />} label="Ver App como Usuario" onClick={() => { navigate('/'); setMenuOpen(false); }} />
                   <div className="border-t my-3" />
                   <button onClick={() => { logout(); navigate('/'); setMenuOpen(false); }}
                     className="w-full flex items-center gap-3 px-4 py-3 rounded-xl text-red-600 hover:bg-red-50 transition text-sm font-medium">
@@ -156,7 +181,10 @@ export function Header() {
             </div>
 
             <div className="absolute bottom-0 left-0 right-0 p-4 border-t bg-gray-50">
-              <p className="text-[11px] text-gray-400 text-center">DescuentosYa v3.0 · Hecho con ❤️ en Uruguay 🇺🇾</p>
+              <p className="text-[11px] text-gray-400 text-center">
+                <span className="font-brand" style={{ fontFamily: "'Fredoka One', sans-serif" }}>Descuentos<span className="text-orange-400">Ya</span></span>
+                {' '}v3.0 · Hecho con ❤️ en 🇺🇾
+              </p>
             </div>
           </div>
         </>
@@ -181,6 +209,7 @@ export function BottomNav() {
   const navigate = useNavigate();
   const location = useLocation();
   const isAdmin = currentUser?.role === 'admin';
+  const isBusiness = currentUser?.role === 'business';
 
   const userTabs = [
     { path: '/', icon: Home, label: 'Inicio' },
@@ -197,6 +226,13 @@ export function BottomNav() {
     { path: '/profile', icon: User, label: 'Perfil' },
   ];
 
+  const businessTabs = [
+    { path: '/business', icon: BarChart3, label: 'Inicio' },
+    { path: '/business#scan', icon: Scan, label: 'Escanear' },
+    { path: '/business#coupons', icon: ListChecks, label: 'Cupones' },
+    { path: '/', icon: Home, label: 'Ver App' },
+  ];
+
   const guestTabs = [
     { path: '/', icon: Home, label: 'Inicio' },
     { path: '/explore', icon: Search, label: 'Explorar' },
@@ -204,15 +240,15 @@ export function BottomNav() {
     { path: '/login', icon: User, label: 'Entrar' },
   ];
 
-  const tabs = !currentUser ? guestTabs : isAdmin ? adminTabs : userTabs;
+  const tabs = !currentUser ? guestTabs : isAdmin ? adminTabs : isBusiness ? businessTabs : userTabs;
 
   return (
     <nav className="fixed bottom-0 left-0 right-0 glass border-t border-gray-200/60 z-50 safe-area-bottom">
       <div className="max-w-lg mx-auto flex">
         {tabs.map((tab) => {
           const isActive = location.pathname === tab.path || (tab.path !== '/' && location.pathname.startsWith(tab.path));
-          const accentColor = isAdmin ? 'text-violet-500' : 'text-orange-500';
-          const dotColor = isAdmin ? 'bg-violet-500' : 'bg-orange-500';
+          const accentColor = isAdmin ? 'text-violet-500' : isBusiness ? 'text-emerald-500' : 'text-orange-500';
+          const dotColor = isAdmin ? 'bg-violet-500' : isBusiness ? 'bg-emerald-500' : 'bg-orange-500';
           return (
             <button key={tab.path + tab.label} onClick={() => navigate(tab.path)}
               className={`flex-1 flex flex-col items-center py-2 pt-2.5 transition-all duration-200 relative
