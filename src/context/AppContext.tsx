@@ -15,11 +15,12 @@ interface AppState {
   selectedCategory: string | null;
   showOnboarding: boolean;
   login: (email: string, password: string) => boolean;
-  loginAs: (role: 'user' | 'admin') => void;
+  loginAs: (role: 'user' | 'admin' | 'business') => void;
   logout: () => void;
   register: (name: string, email: string) => boolean;
   claimDeal: (dealId: string) => Coupon | null;
   validateCoupon: (couponId: string) => boolean;
+  validateCouponByQR: (qrCode: string) => { success: boolean; coupon?: Coupon; error?: string };
   addDeal: (deal: Omit<Deal, 'id' | 'createdAt' | 'claimedQuantity'>) => void;
   updateDeal: (dealId: string, updates: Partial<Deal>) => void;
   deleteDeal: (dealId: string) => void;
@@ -45,6 +46,9 @@ interface AppState {
   getVisibleDeals: () => Deal[];
   getPendingDeals: () => Deal[];
   hasClaimedDeal: (dealId: string) => boolean;
+  getBusinessDeals: () => Deal[];
+  getBusinessCoupons: () => Coupon[];
+  getBusinessStats: () => { totalDeals: number; totalClaimed: number; validatedToday: number; activeCoupons: number; revenue: number };
   unreadNotifications: number;
   totalSaved: number;
   platformStats: {
@@ -91,7 +95,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
     return false;
   }, []);
 
-  const loginAs = useCallback((role: 'user' | 'admin') => {
+  const loginAs = useCallback((role: 'user' | 'admin' | 'business') => {
     const user = mockUsers.find(u => u.role === role);
     if (user) { setCurrentUser(user); setShowOnboarding(false); }
   }, []);
@@ -113,14 +117,13 @@ export function AppProvider({ children }: { children: ReactNode }) {
     return true;
   }, [addToast]);
 
-  // === CLAIM DEAL (FREE — no payment) ===
+  // === CLAIM DEAL ===
   const claimDeal = useCallback((dealId: string): Coupon | null => {
     if (!currentUser) return null;
     const deal = deals.find(d => d.id === dealId);
     if (!deal || deal.availableQuantity <= deal.claimedQuantity) return null;
     if (deal.approvalStatus !== 'approved' || deal.paused) return null;
 
-    // Check if already claimed
     const alreadyClaimed = coupons.find(c => c.dealId === dealId && c.userId === currentUser.id && c.status === 'active');
     if (alreadyClaimed) return null;
 
@@ -158,6 +161,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
     return coupons.some(c => c.dealId === dealId && c.userId === currentUser.id && c.status === 'active');
   }, [currentUser, coupons]);
 
+  // === VALIDATE COUPON BY ID ===
   const validateCoupon = useCallback((couponId: string): boolean => {
     const coupon = coupons.find(c => c.id === couponId);
     if (!coupon || coupon.status !== 'active') return false;
@@ -167,6 +171,68 @@ export function AppProvider({ children }: { children: ReactNode }) {
     addToast('Cupón validado correctamente ✅', 'success');
     return true;
   }, [coupons, addToast]);
+
+  // === VALIDATE COUPON BY QR CODE (for business scanner) ===
+  const validateCouponByQR = useCallback((qrCode: string): { success: boolean; coupon?: Coupon; error?: string } => {
+    const coupon = coupons.find(c => c.qrCode === qrCode);
+    if (!coupon) {
+      return { success: false, error: 'Código QR no encontrado. Verificá que sea un cupón válido de DescuentosYa.' };
+    }
+    if (coupon.status === 'used') {
+      return { success: false, error: `Este cupón ya fue usado el ${new Date(coupon.usedAt || '').toLocaleDateString('es-UY')}.`, coupon };
+    }
+    if (coupon.status === 'expired') {
+      return { success: false, error: 'Este cupón está vencido.', coupon };
+    }
+
+    // If business user, verify the coupon belongs to their business
+    if (currentUser?.role === 'business' && currentUser.businessId) {
+      const deal = deals.find(d => d.id === coupon.dealId);
+      if (deal && deal.businessId !== currentUser.businessId) {
+        return { success: false, error: 'Este cupón no pertenece a tu comercio.', coupon };
+      }
+    }
+
+    setCoupons(prev => prev.map(c =>
+      c.id === coupon.id ? { ...c, status: 'used' as CouponStatus, usedAt: new Date().toISOString() } : c
+    ));
+
+    addToast('✅ ¡Cupón validado con éxito!', 'success');
+    return { success: true, coupon: { ...coupon, status: 'used', usedAt: new Date().toISOString() } };
+  }, [coupons, currentUser, deals, addToast]);
+
+  // === BUSINESS: Get my deals ===
+  const getBusinessDeals = useCallback((): Deal[] => {
+    if (!currentUser?.businessId) return [];
+    return deals.filter(d => d.businessId === currentUser.businessId);
+  }, [currentUser, deals]);
+
+  // === BUSINESS: Get coupons for my deals ===
+  const getBusinessCoupons = useCallback((): Coupon[] => {
+    if (!currentUser?.businessId) return [];
+    const myDealIds = deals.filter(d => d.businessId === currentUser.businessId).map(d => d.id);
+    return coupons.filter(c => myDealIds.includes(c.dealId));
+  }, [currentUser, deals, coupons]);
+
+  // === BUSINESS: Stats ===
+  const getBusinessStats = useCallback(() => {
+    if (!currentUser?.businessId) return { totalDeals: 0, totalClaimed: 0, validatedToday: 0, activeCoupons: 0, revenue: 0 };
+    const myDeals = deals.filter(d => d.businessId === currentUser.businessId);
+    const myDealIds = myDeals.map(d => d.id);
+    const myCoupons = coupons.filter(c => myDealIds.includes(c.dealId));
+    const today = new Date().toDateString();
+    const validatedToday = myCoupons.filter(c => c.status === 'used' && c.usedAt && new Date(c.usedAt).toDateString() === today).length;
+    const activeCoupons = myCoupons.filter(c => c.status === 'active').length;
+    const revenue = myCoupons.filter(c => c.status === 'used').reduce((sum, c) => sum + c.deal.discountPrice, 0);
+
+    return {
+      totalDeals: myDeals.length,
+      totalClaimed: myCoupons.length,
+      validatedToday,
+      activeCoupons,
+      revenue,
+    };
+  }, [currentUser, deals, coupons]);
 
   // === ADMIN: DEAL CRUD ===
   const addDeal = useCallback((deal: Omit<Deal, 'id' | 'createdAt' | 'claimedQuantity'>) => {
@@ -293,7 +359,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
     <AppContext.Provider value={{
       currentUser, deals, coupons, notifications, reviews, favorites, toasts, businesses,
       searchQuery, selectedCategory, showOnboarding,
-      login, loginAs, logout, register, claimDeal, validateCoupon,
+      login, loginAs, logout, register, claimDeal, validateCoupon, validateCouponByQR,
       addDeal, updateDeal, deleteDeal, togglePauseDeal,
       approveDeal, rejectDeal, toggleFeatured,
       addBusiness, updateBusiness, deleteBusiness,
@@ -301,6 +367,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
       toggleFavorite, isFavorite, addReview, getReviewsForDeal,
       addToast, removeToast, dismissOnboarding,
       getCouponsByStatus, getVisibleDeals, getPendingDeals, hasClaimedDeal,
+      getBusinessDeals, getBusinessCoupons, getBusinessStats,
       unreadNotifications, totalSaved, platformStats,
     }}>
       {children}
