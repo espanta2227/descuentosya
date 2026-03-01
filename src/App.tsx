@@ -11,6 +11,7 @@ import ProfilePage from './pages/ProfilePage';
 import NotificationsPage from './pages/NotificationsPage';
 import MapPage from './pages/MapPage';
 import AdminDashboard from './pages/AdminPages';
+import BusinessDashboard from './pages/BusinessPages';
 import DeployGuidePage from './pages/DeployGuidePage';
 import InstallPrompt from './components/InstallPrompt';
 
@@ -32,6 +33,7 @@ export default function App() {
               <Route path="/login" element={<LoginPage />} />
               <Route path="/register" element={<RegisterPage />} />
               <Route path="/admin" element={<AdminDashboard />} />
+              <Route path="/business" element={<BusinessDashboard />} />
               <Route path="/deploy-guide" element={<DeployGuidePage />} />
               <Route path="/profile" element={<ProfilePage />} />
               <Route path="/notifications" element={<NotificationsPage />} />
