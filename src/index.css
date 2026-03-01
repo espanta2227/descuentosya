@@ -1,5 +1,14 @@
 @import "tailwindcss";
 
+/* Tipografías */
+body {
+  font-family: 'Poppins', system-ui, -apple-system, sans-serif;
+}
+
+.font-brand {
+  font-family: 'Fredoka One', 'Poppins', system-ui, sans-serif;
+}
+
 @theme {
   --color-brand-50: #fff7ed;
   --color-brand-100: #ffedd5;
