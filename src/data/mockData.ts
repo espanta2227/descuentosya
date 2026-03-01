@@ -4,6 +4,12 @@ export const mockUsers: User[] = [
   { id: 'u1', name: 'Martín González', email: 'martin@gmail.com', role: 'user', phone: '+598 99 123 456', createdAt: '2024-01-15' },
   { id: 'u2', name: 'Lucía Rodríguez', email: 'lucia@gmail.com', role: 'user', phone: '+598 98 654 321', createdAt: '2024-02-20' },
   { id: 'a1', name: 'Admin DescuentosYa', email: 'admin@descuentosya.uy', role: 'admin', createdAt: '2024-01-01' },
+  // Usuarios de comercios — el admin les crea las credenciales
+  { id: 'biz1', name: 'Carlos Méndez (El Palenque)', email: 'carlos@elpalenque.uy', role: 'business', businessId: 'b1', phone: '+598 2916 0000', createdAt: '2024-03-01' },
+  { id: 'biz2', name: 'Ana Martínez (Spa Pocitos)', email: 'ana@spapocitos.uy', role: 'business', businessId: 'b2', phone: '+598 2712 3456', createdAt: '2024-03-05' },
+  { id: 'biz3', name: 'Diego López (TechStore UY)', email: 'diego@techstoreuy.com', role: 'business', businessId: 'b3', phone: '+598 2900 1234', createdAt: '2024-03-10' },
+  { id: 'biz4', name: 'Sebastián Pérez (MVD Fitness)', email: 'seba@mvdfitness.uy', role: 'business', businessId: 'b4', phone: '+598 2622 7890', createdAt: '2024-03-15' },
+  { id: 'biz5', name: 'Roberto Silva (La Pasiva)', email: 'roberto@lapasiva.uy', role: 'business', businessId: 'b5', phone: '+598 2901 5678', createdAt: '2024-03-20' },
 ];
 
 export const mockBusinesses: Business[] = [
