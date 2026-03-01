@@ -4,7 +4,7 @@ import {
   Shield, BarChart3, Package, Store, Users, TrendingUp,
   CheckCircle, XCircle, Clock, Eye, Star, ChevronRight, AlertTriangle,
   ArrowUpRight, Search, Plus, Pause, Play, Trash2,
-  MapPin, Navigation, Car, Footprints, Bus, Bike, Locate, RotateCcw,
+  MapPin, Navigation, Car, Footprints, Bike, Locate, RotateCcw,
   Edit3, X, Camera, Upload, Phone, Mail, Save, ChevronDown, Image as ImageIcon
 } from 'lucide-react';
 import L from 'leaflet';
@@ -13,7 +13,7 @@ import { useApp } from '../context/AppContext';
 import { PageContainer, EmptyState } from '../components/Layout';
 import { formatPrice } from '../components/DealCard';
 import { Deal, Business } from '../types';
-import { getNearbyBusLines, calculateDistance, estimateTravelTime, formatDistanceText } from '../data/busLines';
+import { calculateDistance, estimateTravelTime, formatDistanceText } from '../data/busLines';
 
 type AdminTab = 'overview' | 'pending' | 'deals' | 'businesses' | 'create';
 
@@ -1182,12 +1182,9 @@ function CreateDealForm({ onSave, addToast, businesses }: {
     ? (() => {
         const dist = calculateDistance(userLocation[0], userLocation[1], dealLocation[0], dealLocation[1]);
         const travel = estimateTravelTime(dist);
-        const busInfo = getNearbyBusLines(dealLocation[0], dealLocation[1]);
-        return { distance: dist, travel, busInfo };
+        return { distance: dist, travel };
       })()
     : null;
-
-  const busInfoOnly = dealLocation ? getNearbyBusLines(dealLocation[0], dealLocation[1]) : null;
 
   // Initialize map
   useEffect(() => {
@@ -1500,29 +1497,23 @@ function CreateDealForm({ onSave, addToast, businesses }: {
         </div>
       )}
 
-      {/* Bus info */}
-      {dealLocation && (busInfoOnly || travelInfo?.busInfo) && (
-        <div className="bg-gradient-to-br from-emerald-50 to-green-50 rounded-2xl p-4 border border-emerald-200">
-          <div className="flex items-center gap-2 mb-3">
-            <Bus size={16} className="text-emerald-600" />
-            <div>
-              <h4 className="font-bold text-sm text-emerald-800">🚌 Ómnibus Cercanos</h4>
-              <p className="text-[11px] text-emerald-600">Zona: {(travelInfo?.busInfo || busInfoOnly)?.zone}</p>
+      {/* Google Maps link */}
+      {dealLocation && (
+        <div className="bg-gradient-to-br from-blue-50 to-cyan-50 rounded-2xl p-4 border border-blue-200">
+          <a
+            href={`https://www.google.com/maps/dir/?api=1&destination=${dealLocation[0]},${dealLocation[1]}`}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="flex items-center gap-3 text-sm text-blue-700 font-semibold hover:text-blue-800 transition"
+          >
+            <div className="w-10 h-10 rounded-xl bg-blue-100 flex items-center justify-center flex-shrink-0">
+              <Navigation size={18} className="text-blue-600" />
             </div>
-          </div>
-          <div className="space-y-2">
-            {(travelInfo?.busInfo || busInfoOnly)?.lines.slice(0, 4).map((line, i) => (
-              <div key={i} className="bg-white rounded-xl p-2.5 flex items-center gap-3 shadow-sm">
-                <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-emerald-500 to-green-600 flex items-center justify-center flex-shrink-0">
-                  <span className="text-white font-extrabold text-xs">{line.number}</span>
-                </div>
-                <div className="flex-1 min-w-0">
-                  <p className="text-xs font-semibold line-clamp-1">{line.name}</p>
-                  <p className="text-[10px] text-gray-400">{line.company}</p>
-                </div>
-              </div>
-            ))}
-          </div>
+            <div>
+              <p className="font-bold">📍 Abrir en Google Maps</p>
+              <p className="text-[11px] text-blue-500 font-normal">Ver cómo llegar al comercio</p>
+            </div>
+          </a>
         </div>
       )}
 
