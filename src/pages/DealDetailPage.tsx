@@ -1,13 +1,13 @@
 import { useState, useEffect, useCallback, useRef } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { ArrowLeft, MapPin, Clock, Shield, Star, Share2, Heart, CheckCircle, AlertTriangle, ThumbsUp, Send, Navigation, Car, Footprints, Bike, Bus, ExternalLink } from 'lucide-react';
+import { ArrowLeft, MapPin, Clock, Shield, Star, Share2, Heart, CheckCircle, AlertTriangle, ThumbsUp, Send, Navigation, Car, Footprints, Bike, ExternalLink } from 'lucide-react';
 import { QRCodeSVG } from 'qrcode.react';
 import L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
 import { useApp } from '../context/AppContext';
 import { StarRating } from '../components/Layout';
 import { formatPrice, daysLeft } from '../components/DealCard';
-import { getNearbyBusLines, calculateDistance, estimateTravelTime, formatDistanceText } from '../data/busLines';
+import { calculateDistance, estimateTravelTime, formatDistanceText } from '../data/busLines';
 import { Deal } from '../types';
 
 export default function DealDetailPage() {
@@ -426,10 +426,7 @@ function LocationInfoSection({ deal }: { deal: Deal }) {
   const mapInstanceRef = useRef<L.Map | null>(null);
   const [userLocation, setUserLocation] = useState<[number, number] | null>(null);
   const [isLocating, setIsLocating] = useState(false);
-  const [showBuses, setShowBuses] = useState(false);
   const [mapExpanded, setMapExpanded] = useState(false);
-
-  const busInfo = getNearbyBusLines(deal.lat, deal.lng);
 
   const travelInfo = userLocation
     ? (() => {
@@ -696,62 +693,6 @@ function LocationInfoSection({ deal }: { deal: Deal }) {
         )}
       </div>
 
-      {/* BUS LINES */}
-      <div className="bg-emerald-50 rounded-2xl border border-emerald-200 overflow-hidden">
-        <button
-          onClick={() => setShowBuses(!showBuses)}
-          className="w-full p-4 flex items-center justify-between hover:bg-emerald-100/50 transition"
-        >
-          <div className="flex items-center gap-2">
-            <div className="w-9 h-9 bg-emerald-100 rounded-full flex items-center justify-center">
-              <Bus size={18} className="text-emerald-600" />
-            </div>
-            <div className="text-left">
-              <h4 className="font-bold text-sm text-emerald-800">🚌 Ómnibus cercanos</h4>
-              <p className="text-[11px] text-emerald-600">
-                Zona {busInfo.zone} · {busInfo.lines.length} líneas disponibles
-              </p>
-            </div>
-          </div>
-          <div className={`text-emerald-400 transition-transform duration-200 ${showBuses ? 'rotate-90' : ''}`}>
-            ▶
-          </div>
-        </button>
-
-        {showBuses && (
-          <div className="px-4 pb-4 space-y-2 animate-fadeIn border-t border-emerald-200/50 pt-3">
-            <div className="grid grid-cols-2 gap-2">
-              {busInfo.lines.map((line, i) => (
-                <div key={i} className="bg-white rounded-xl p-2.5 flex items-center gap-2.5 shadow-sm">
-                  <div className="w-9 h-9 rounded-lg bg-gradient-to-br from-emerald-500 to-green-600 flex items-center justify-center flex-shrink-0">
-                    <span className="text-white font-extrabold text-[11px]">{line.number}</span>
-                  </div>
-                  <div className="flex-1 min-w-0">
-                    <p className="text-[11px] font-semibold text-gray-800 line-clamp-1">{line.name}</p>
-                    <p className="text-[9px] text-gray-400">{line.company}</p>
-                  </div>
-                </div>
-              ))}
-            </div>
-
-            <div className="bg-white/70 rounded-xl p-3 text-center mt-2 space-y-1.5">
-              <p className="text-[11px] text-emerald-700 font-medium">
-                💡 Consultá horarios y recorridos:
-              </p>
-              <div className="flex gap-2 justify-center">
-                <a href="https://www.montevideo.gub.uy/aplicacion/como-ir" target="_blank" rel="noopener noreferrer"
-                   className="bg-emerald-500 text-white text-[10px] font-bold px-3 py-1.5 rounded-lg hover:bg-emerald-600 transition">
-                  ¿Cómo ir? (IMM)
-                </a>
-                <a href="https://stm.com.uy" target="_blank" rel="noopener noreferrer"
-                   className="bg-blue-500 text-white text-[10px] font-bold px-3 py-1.5 rounded-lg hover:bg-blue-600 transition">
-                  STM Uruguay
-                </a>
-              </div>
-            </div>
-          </div>
-        )}
-      </div>
     </div>
   );
 }
