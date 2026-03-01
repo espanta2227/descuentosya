@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { ArrowLeft, Mail, Lock, User, Eye, EyeOff } from 'lucide-react';
 import { useApp } from '../context/AppContext';
+import { LogoIcon } from '../components/Logo';
 
 export function LoginPage() {
   const navigate = useNavigate();
@@ -25,10 +26,17 @@ export function LoginPage() {
         <button onClick={() => navigate(-1)} className="absolute top-4 left-4 p-2 hover:bg-white/20 rounded-full">
           <ArrowLeft size={22} />
         </button>
-        <div className="text-center">
-          <div className="text-5xl mb-3">🏷️</div>
-          <h1 className="text-3xl font-extrabold">¡Bienvenido!</h1>
-          <p className="text-white/80 mt-1">Iniciá sesión en DescuentosYa</p>
+        <div className="text-center flex flex-col items-center">
+          <LogoIcon size={56} />
+          <h1 
+            className="text-3xl mt-3"
+            style={{ fontFamily: "'Fredoka One', 'Poppins', sans-serif" }}
+          >
+            ¡Bienvenido!
+          </h1>
+          <p className="text-white/80 mt-1">
+            Iniciá sesión en <span style={{ fontFamily: "'Fredoka One', sans-serif" }}>Descuentos<span className="text-yellow-200">Ya</span></span>
+          </p>
         </div>
       </div>
 
@@ -75,14 +83,21 @@ export function LoginPage() {
           {/* Quick Access */}
           <div className="mt-6 pt-5 border-t">
             <p className="text-xs text-gray-500 text-center mb-3">⚡ Acceso rápido para demo</p>
-            <div className="grid grid-cols-2 gap-2">
+            <div className="grid grid-cols-3 gap-2">
               <button onClick={() => { loginAs('user'); navigate('/'); }}
-                className="flex items-center justify-center gap-2 bg-green-50 border border-green-200 text-green-700 px-4 py-2.5 rounded-xl text-sm font-medium hover:bg-green-100 transition">
-                <User size={16} /> Usuario
+                className="flex flex-col items-center justify-center gap-1 bg-green-50 border border-green-200 text-green-700 px-3 py-3 rounded-xl text-xs font-medium hover:bg-green-100 transition">
+                <User size={18} />
+                <span>Usuario</span>
+              </button>
+              <button onClick={() => { loginAs('business'); navigate('/business'); }}
+                className="flex flex-col items-center justify-center gap-1 bg-emerald-50 border border-emerald-200 text-emerald-700 px-3 py-3 rounded-xl text-xs font-medium hover:bg-emerald-100 transition">
+                <span className="text-lg">🏪</span>
+                <span>Comercio</span>
               </button>
               <button onClick={() => { loginAs('admin'); navigate('/admin'); }}
-                className="flex items-center justify-center gap-2 bg-violet-50 border border-violet-200 text-violet-700 px-4 py-2.5 rounded-xl text-sm font-medium hover:bg-violet-100 transition">
-                🛡️ Admin
+                className="flex flex-col items-center justify-center gap-1 bg-violet-50 border border-violet-200 text-violet-700 px-3 py-3 rounded-xl text-xs font-medium hover:bg-violet-100 transition">
+                <span className="text-lg">🛡️</span>
+                <span>Admin</span>
               </button>
             </div>
           </div>
@@ -119,10 +134,17 @@ export function RegisterPage() {
         <button onClick={() => navigate(-1)} className="absolute top-4 left-4 p-2 hover:bg-white/20 rounded-full">
           <ArrowLeft size={22} />
         </button>
-        <div className="text-center">
-          <div className="text-5xl mb-3">🚀</div>
-          <h1 className="text-3xl font-extrabold">Crear Cuenta</h1>
-          <p className="text-white/80 mt-1">Unite a DescuentosYa — ¡Es gratis!</p>
+        <div className="text-center flex flex-col items-center">
+          <LogoIcon size={56} />
+          <h1 
+            className="text-3xl mt-3"
+            style={{ fontFamily: "'Fredoka One', 'Poppins', sans-serif" }}
+          >
+            Crear Cuenta
+          </h1>
+          <p className="text-white/80 mt-1">
+            Unite a <span style={{ fontFamily: "'Fredoka One', sans-serif" }}>Descuentos<span className="text-yellow-200">Ya</span></span> — ¡Es gratis!
+          </p>
         </div>
       </div>
 
