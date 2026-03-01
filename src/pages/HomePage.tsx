@@ -1,10 +1,12 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Search, ChevronRight, Flame, Zap, Sparkles, ArrowRight, TrendingUp, Gift } from 'lucide-react';
+import { ChevronRight, Flame, Zap, Sparkles, ArrowRight, TrendingUp, Gift } from 'lucide-react';
 import { useApp } from '../context/AppContext';
 import { PageContainer } from '../components/Layout';
 import DealCard from '../components/DealCard';
 import { categories } from '../data/mockData';
+import { LogoIcon } from '../components/Logo';
+import { HeroBanner, AdBanner } from '../components/Banner';
 
 function AnimatedCounter({ target, duration = 1500 }: { target: number; duration?: number }) {
   const [count, setCount] = useState(0);
@@ -46,10 +48,10 @@ export default function HomePage() {
           <div className="absolute right-10 -bottom-8 w-20 h-20 bg-white/10 rounded-full" />
           <button onClick={dismissOnboarding} className="absolute top-3 right-3 text-white/60 hover:text-white text-lg">✕</button>
           <div className="flex items-start gap-3">
-            <span className="text-4xl animate-bounce-subtle">🎁</span>
+            <span className="text-4xl animate-bounce-subtle">🎟️</span>
             <div>
-              <h2 className="font-extrabold text-lg mb-1">¡Tu primera compra con 10% extra!</h2>
-              <p className="text-white/80 text-sm mb-3">Registrate ahora y recibí un descuento adicional en tu primer cupón.</p>
+              <h2 className="font-extrabold text-lg mb-1">¡Descuentos increíbles cerca tuyo!</h2>
+              <p className="text-white/80 text-sm mb-3">Encontrá las mejores ofertas de comercios locales. Canjeá tu cupón y pagá menos.</p>
               <button onClick={() => navigate('/register')}
                 className="bg-white text-purple-700 px-5 py-2 rounded-xl text-sm font-bold hover:bg-white/90 transition flex items-center gap-1.5">
                 Crear Cuenta Gratis <ArrowRight size={14} />
@@ -59,41 +61,19 @@ export default function HomePage() {
         </div>
       )}
 
-      {/* Hero / Search */}
-      <div className="bg-gradient-to-br from-orange-500 via-amber-500 to-yellow-400 rounded-3xl p-6 mb-5 text-white relative overflow-hidden animate-fadeIn">
-        <div className="absolute -right-10 -top-10 w-36 h-36 bg-white/10 rounded-full" />
-        <div className="absolute right-8 -bottom-14 w-28 h-28 bg-white/10 rounded-full" />
-        <div className="absolute left-4 bottom-3 w-16 h-16 bg-white/5 rounded-full" />
+      {/* =============================== */}
+      {/* HERO BANNER                      */}
+      {/* Poné tu imagen en public/banner.jpg */}
+      {/* =============================== */}
+      <HeroBanner
+        currentUser={currentUser}
+        totalSaved={totalSaved}
+        localSearch={localSearch}
+        setLocalSearch={setLocalSearch}
+        onSearch={handleSearch}
+      />
 
-        <h1 className="text-2xl font-extrabold mb-1 relative">
-          {currentUser ? (
-            <>¡Hola, {currentUser.name.split(' ')[0]}! 👋</>
-          ) : (
-            <>Descubrí Ofertas 🔥</>
-          )}
-        </h1>
-        <p className="text-white/85 text-sm mb-4 relative">
-          {currentUser && totalSaved > 0
-            ? `Ya ahorraste $U ${new Intl.NumberFormat('es-UY', { maximumFractionDigits: 0 }).format(totalSaved)} 💰`
-            : 'Los mejores descuentos de Uruguay 🇺🇾'
-          }
-        </p>
-
-        <div className="relative">
-          <Search size={18} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-400" />
-          <input type="text" placeholder="Buscar ofertas, comercios..."
-            value={localSearch}
-            onChange={e => setLocalSearch(e.target.value)}
-            onKeyDown={e => e.key === 'Enter' && handleSearch()}
-            className="w-full pl-11 pr-20 py-3.5 rounded-2xl text-gray-800 text-sm focus:outline-none focus:ring-2 focus:ring-orange-300 shadow-lg placeholder:text-gray-400" />
-          <button onClick={handleSearch}
-            className="absolute right-1.5 top-1/2 -translate-y-1/2 bg-orange-500 text-white px-4 py-2.5 rounded-xl text-sm font-semibold hover:bg-orange-600 transition shadow-md">
-            Buscar
-          </button>
-        </div>
-      </div>
-
-      {/* Quick login */}
+      {/* Quick login (solo demo) */}
       {!currentUser && (
         <div className="bg-gradient-to-r from-green-50 to-emerald-50 border border-green-200 rounded-2xl p-4 mb-5 animate-fadeInUp" style={{ animationDelay: '100ms' }}>
           <p className="text-sm text-green-800 font-semibold mb-3 flex items-center gap-2">
@@ -133,6 +113,15 @@ export default function HomePage() {
         </div>
       </section>
 
+      {/* =============================== */}
+      {/* BANNER PUBLICITARIO #1           */}
+      {/* Poné tu imagen en public/banner-ad.jpg */}
+      {/* =============================== */}
+      <AdBanner 
+        linkTo="/explore"
+        className="mb-6"
+      />
+
       {/* Featured Flash Deal */}
       {featuredDeals[0] && (
         <section className="mb-6 animate-fadeInUp" style={{ animationDelay: '200ms' }}>
@@ -162,6 +151,12 @@ export default function HomePage() {
           {hotDeals.map((deal, i) => <DealCard key={deal.id} deal={deal} compact index={i} />)}
         </div>
       </section>
+
+      {/* Banner publicitario #2 (rota automáticamente) */}
+      <AdBanner 
+        linkTo="/explore"
+        className="mb-6"
+      />
 
       {/* Big Discounts Carousel */}
       <section className="mb-6">
@@ -201,7 +196,9 @@ export default function HomePage() {
       <section className="bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900 rounded-2xl p-6 text-white mb-6 relative overflow-hidden animate-fadeInUp">
         <div className="absolute -right-8 -top-8 w-32 h-32 bg-orange-500/10 rounded-full" />
         <div className="absolute -left-4 -bottom-4 w-20 h-20 bg-amber-500/10 rounded-full" />
-        <h3 className="font-bold text-sm text-gray-400 mb-4 uppercase tracking-wider">📊 DescuentosYa en números</h3>
+        <h3 className="font-bold text-sm text-gray-400 mb-4 uppercase tracking-wider">
+          📊 <span style={{ fontFamily: "'Fredoka One', sans-serif" }}>Descuentos<span className="text-orange-400">Ya</span></span> en números
+        </h3>
         <div className="grid grid-cols-3 gap-4 text-center relative">
           <div>
             <p className="text-3xl font-extrabold text-gradient"><AnimatedCounter target={activeDeals.length} />+</p>
@@ -221,8 +218,15 @@ export default function HomePage() {
       {/* CTA */}
       {!currentUser && (
         <section className="bg-gradient-to-r from-orange-500 to-amber-500 rounded-2xl p-5 text-white text-center mb-6 animate-fadeInUp">
-          <p className="text-2xl mb-2">🎟️</p>
-          <h3 className="font-extrabold text-lg mb-1">¡Descuentos increíbles cerca tuyo!</h3>
+          <div className="flex justify-center mb-3">
+            <LogoIcon size={48} />
+          </div>
+          <h3 
+            className="text-xl mb-1"
+            style={{ fontFamily: "'Fredoka One', sans-serif" }}
+          >
+            Descuentos<span className="text-yellow-200">Ya</span>
+          </h3>
           <p className="text-white/80 text-sm mb-4">Registrate, obtené tu cupón con QR y pagá menos en los mejores comercios de Uruguay</p>
           <button onClick={() => navigate('/register')}
             className="bg-white text-orange-600 px-6 py-2.5 rounded-xl font-bold text-sm hover:bg-white/90 transition shadow-lg">
